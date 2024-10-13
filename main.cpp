@@ -140,7 +140,7 @@ int main()
 
 	// Inicializando a sprite do background
 	int imgWidth, imgHeight;
-	int texID = loadTexture("./textures/Battleground3/Bright/Battleground3.png", imgWidth, imgHeight);
+	int texID = loadTexture("textures/backgrounds/PNG/Battleground3/Bright/Battleground3.png", imgWidth, imgHeight);
 	background.setupSprite(texID, vec3(400.0, 300.0, 0.0), vec3(imgWidth * 0.5, imgHeight * 0.5, 1.0), 1, 1);
 
 	// Inicializando a sprite do personagem
