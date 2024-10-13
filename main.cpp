@@ -98,10 +98,10 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// Essencial para computadores da Apple
-	#ifdef __APPLE__
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	#endif
+// Essencial para computadores da Apple
+#ifdef __APPLE__
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 
 	// Criação da janela GLFW
 	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Spaceship Game!", nullptr, nullptr);
@@ -183,22 +183,38 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // cor de fundo
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		float random = glfwGetTime();
+
 		vec2 offsetTex = vec2(0.0, 0.0);
+		
 		glUniform2f(glGetUniformLocation(shaderID, "offsetTex"), offsetTex.s, offsetTex.t);
+		
 		drawSprite(background, shaderID);
 
-		// Esquerda e Direita
+		meteor.position.y -= random * 2.0f;
+
 		if (keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A])
 			spaceship.position.x -= vel;
 		if (keys[GLFW_KEY_RIGHT] || keys[GLFW_KEY_D])
 			spaceship.position.x += vel;
 
-		// Para cima e para baixo
 		if (keys[GLFW_KEY_UP] || keys[GLFW_KEY_W])
     		spaceship.position.y += vel;
 		if (keys[GLFW_KEY_DOWN] || keys[GLFW_KEY_S])
-    		spaceship.position.y -= vel;
+    		spaceship.position.y -= vel;  
 
+		float now = glfwGetTime();
+		float dt = now - spaceship.lastTime;
+		if (dt >= 1.0 / spaceship.FPS)
+		{
+			spaceship.iFrame = (spaceship.iFrame + 1) % spaceship.nFrames; // incrementando ciclicamente o indice do Frame
+			spaceship.lastTime = now;
+		}
+		
+		offsetTex.s = spaceship.iFrame * spaceship.d.s;
+		
+		offsetTex.t = 0.0;
+		
 		glUniform2f(glGetUniformLocation(shaderID, "offsetTex"), offsetTex.s, offsetTex.t);
 		drawSprite(spaceship, shaderID);
 		drawSprite(meteor, shaderID);
