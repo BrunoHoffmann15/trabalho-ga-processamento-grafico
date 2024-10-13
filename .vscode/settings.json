@@ -1,5 +1,6 @@
 {
   "files.associations": {
+    "*.html": "html",
     "bitset": "cpp",
     "initializer_list": "cpp",
     "string": "cpp",
@@ -7,7 +8,8 @@
     "vector": "cpp",
     "cmath": "cpp",
     "stdexcept": "cpp",
-    "ios": "cpp"
+    "ios": "cpp",
+    "iostream": "cpp"
   },
   "C_Cpp_Runner.msvcBatchPath": ""
 }

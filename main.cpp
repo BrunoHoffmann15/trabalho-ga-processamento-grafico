@@ -1,9 +1,6 @@
-/* Hello Triangle - código adaptado de https://learnopengl.com/#!Getting-started/Hello-Triangle
+/* 
  *
- * Adaptado por Rossana Baptista Queiroz
- * para a disciplina de Processamento Gráfico - Unisinos
- * Versão inicial: 7/4/2017
- * Última atualização em 13/08/2024
+ * Trabalho GA - 2024/02 - Bel Cogo, Bruno Hoffmann e João Accorsi
  *
  */
 
@@ -107,7 +104,7 @@ int main()
 	#endif
 
 	// Criação da janela GLFW
-	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Hello Sprites!", nullptr, nullptr);
+	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Spaceship Game!", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
 	// Fazendo o registro da função de callback para a janela GLFW
@@ -135,17 +132,21 @@ int main()
 
 	// Gerando um buffer simples, com a geometria de um triângulo
 	// Sprite do fundo da cena
-	Sprite background, character;
+	Sprite background, spaceship, meteor;
 	// Carregando uma textura (recebendo seu ID)
 
 	// Inicializando a sprite do background
 	int imgWidth, imgHeight;
-	int texID = loadTexture("textures/backgrounds/PNG/Battleground3/Bright/Battleground3.png", imgWidth, imgHeight);
-	background.setupSprite(texID, vec3(400.0, 300.0, 0.0), vec3(imgWidth * 0.5, imgHeight * 0.5, 1.0), 1, 1);
+	int texID = loadTexture("textures/space.jpg", imgWidth, imgHeight);
+	background.setupSprite(texID, vec3(400.0, 300.0, 0.0), vec3(imgWidth * 0.2, imgHeight * 0.2, 1.0), 1, 1);
 
-	// Inicializando a sprite do personagem
-	texID = loadTexture("./textures/characters/PNG/1 Pink_Monster/Pink_Monster_Walk_6.png", imgWidth, imgHeight);
-	character.setupSprite(texID, vec3(50.0, 200.0, 0.0), vec3(imgWidth / 6.0 * 2.0, imgHeight * 2.0, 1.0), 6, 1);
+	// Inicializando a sprite da nave
+	texID = loadTexture("./textures/spaceship.png", imgWidth, imgHeight);
+	spaceship.setupSprite(texID, vec3(100.0, 100.0, 0.0), vec3(imgWidth * 0.1, imgHeight * 0.1, 1.0), 1, 1);
+
+	// Inicializando a sprite do cometa
+	texID = loadTexture("./textures/meteor.png", imgWidth, imgHeight);
+	meteor.setupSprite(texID, vec3(500.0, 400.0, 0.0), vec3(imgWidth * 0.2, imgHeight * 0.2, 1.0), 1, 1);
 
 	glUseProgram(shaderID);
 
@@ -185,23 +186,22 @@ int main()
 		vec2 offsetTex = vec2(0.0, 0.0);
 		glUniform2f(glGetUniformLocation(shaderID, "offsetTex"), offsetTex.s, offsetTex.t);
 		drawSprite(background, shaderID);
-		if (keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A])
-			character.position.x -= vel;
-		if (keys[GLFW_KEY_RIGHT] || keys[GLFW_KEY_D])
-			character.position.x += vel;
-		// Incremento circular (em loop) do índice do frame
 
-		float now = glfwGetTime();
-		float dt = now - character.lastTime;
-		if (dt >= 1.0 / character.FPS)
-		{
-			character.iFrame = (character.iFrame + 1) % character.nFrames; // incrementando ciclicamente o indice do Frame
-			character.lastTime = now;
-		}
-		offsetTex.s = character.iFrame * character.d.s;
-		offsetTex.t = 0.0;
+		// Esquerda e Direita
+		if (keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A])
+			spaceship.position.x -= vel;
+		if (keys[GLFW_KEY_RIGHT] || keys[GLFW_KEY_D])
+			spaceship.position.x += vel;
+
+		// Para cima e para baixo
+		if (keys[GLFW_KEY_UP] || keys[GLFW_KEY_W])
+    		spaceship.position.y += vel;
+		if (keys[GLFW_KEY_DOWN] || keys[GLFW_KEY_S])
+    		spaceship.position.y -= vel;
+
 		glUniform2f(glGetUniformLocation(shaderID, "offsetTex"), offsetTex.s, offsetTex.t);
-		drawSprite(character, shaderID);
+		drawSprite(spaceship, shaderID);
+		drawSprite(meteor, shaderID);
 
 		// Troca os buffers da tela
 		glfwSwapBuffers(window);
@@ -394,6 +394,7 @@ int loadTexture(string filePath, int &imgWidth, int &imgHeight)
 	return texID;
 }
 
+
 void drawSprite(Sprite spr, GLuint shaderID)
 {
 	glBindVertexArray(spr.VAO); // Conectando ao buffer de geometria
@@ -404,8 +405,6 @@ void drawSprite(Sprite spr, GLuint shaderID)
 	mat4 model = mat4(1); // matriz identidade
 	// Translação
 	model = translate(model, spr.position);
-	// Rotação
-	model = rotate(model, radians(spr.angle), vec3(0.0, 0.0, 1.0));
 	// Escala
 	model = scale(model, spr.dimensions);
 	// Enviar para o shader
