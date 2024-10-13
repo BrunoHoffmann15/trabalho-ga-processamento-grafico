@@ -101,10 +101,10 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// Essencial para computadores da Apple
-	#ifdef __APPLE__
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	#endif
+// Essencial para computadores da Apple
+#ifdef __APPLE__
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 
 	// Criação da janela GLFW
 	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Hello Sprites!", nullptr, nullptr);
@@ -135,7 +135,7 @@ int main()
 
 	// Gerando um buffer simples, com a geometria de um triângulo
 	// Sprite do fundo da cena
-	Sprite background, character;
+	Sprite background, character, rock;
 	// Carregando uma textura (recebendo seu ID)
 
 	// Inicializando a sprite do background
@@ -146,6 +146,9 @@ int main()
 	// Inicializando a sprite do personagem
 	texID = loadTexture("./textures/characters/PNG/1 Pink_Monster/Pink_Monster_Walk_6.png", imgWidth, imgHeight);
 	character.setupSprite(texID, vec3(50.0, 200.0, 0.0), vec3(imgWidth / 6.0 * 2.0, imgHeight * 2.0, 1.0), 6, 1);
+
+	texID = loadTexture("./textures/characters/PNG/1 Pink_Monster/Rock2.png", imgWidth, imgHeight);
+	rock.setupSprite(texID, vec3(50.0, 600.0, 0.0), vec3(imgWidth * 2.0, imgHeight * 2.0, 1.0), 1, 1);
 
 	glUseProgram(shaderID);
 
@@ -182,9 +185,16 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // cor de fundo
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		float random = glfwGetTime();
+
 		vec2 offsetTex = vec2(0.0, 0.0);
+		
 		glUniform2f(glGetUniformLocation(shaderID, "offsetTex"), offsetTex.s, offsetTex.t);
+		
 		drawSprite(background, shaderID);
+
+		rock.position.y -= random * 2.0f;
+
 		if (keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A])
 			character.position.x -= vel;
 		if (keys[GLFW_KEY_RIGHT] || keys[GLFW_KEY_D])
@@ -198,12 +208,17 @@ int main()
 			character.iFrame = (character.iFrame + 1) % character.nFrames; // incrementando ciclicamente o indice do Frame
 			character.lastTime = now;
 		}
+		
 		offsetTex.s = character.iFrame * character.d.s;
+		
 		offsetTex.t = 0.0;
+		
 		glUniform2f(glGetUniformLocation(shaderID, "offsetTex"), offsetTex.s, offsetTex.t);
+		
 		drawSprite(character, shaderID);
+		
+		drawSprite(rock, shaderID);
 
-		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}
 	// Pede pra OpenGL desalocar os buffers
