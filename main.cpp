@@ -250,6 +250,8 @@ int main(){
 			if ((keys[GLFW_KEY_DOWN] || keys[GLFW_KEY_S]) && (spaceship.position.y - vel) > 30) // movimenta Y -> baixo.
 				spaceship.position.y -= vel;
 
+			spaceship.position.y -= 0.3; // adiciona peso da gravidade.
+
 			// Atualização meteoros na tela
 			for (size_t i = 0; i < meteors.size(); i++) {
 				meteors[i].position.x -= vel; // Move each meteor left
