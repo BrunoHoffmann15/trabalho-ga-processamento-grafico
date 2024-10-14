@@ -172,12 +172,13 @@ int main(){
 	int numMeteors = 5; // Number of meteors
 	for (int i = 0; i < numMeteors; i++) {
 		Sprite meteor;
-		texID = loadTexture("./textures/meteor.png", imgWidth, imgHeight);
-		meteor.setupSprite(texID, vec3(500.0 + i * 100, 300.0, 0.0), vec3(imgWidth * 0.2, imgHeight * 0.2, 1.0), 1, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
-		
+		texID = loadTexture("./textures/animated-meteor.png", imgWidth, imgHeight);
+		meteor.setupSprite(texID, vec3(500.0 + i * 100, 300.0, 0.0), vec3((imgWidth / 6) * 0.2, imgHeight * 0.2, 1.0), 6, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
+
 		// Randomize the Y position for each meteor
 		meteor.position.y = rand() % (HEIGHT - (int)(meteor.dimensions.y * 2)) + (int)(meteor.dimensions.y);
-		
+		meteor.iFrame = i;
+
 		meteors.push_back(meteor); // Add meteor to the vector
 	}
 
@@ -270,12 +271,6 @@ int main(){
 					break; // Exit the loop if collision occurs
 				}
 			}
-
-			// Draw all meteors
-			for (size_t i = 0; i < meteors.size(); i++) {
-				drawSprite(meteors[i], shaderID);
-			}
-
 			// Atualiza as distâncias para o check decolisão
 			updateSpriteBounds(spaceship);
 			updateSpriteBounds(meteor);
@@ -289,6 +284,13 @@ int main(){
 
 			drawSprite(spaceship, shaderID);
 			drawSprite(meteor, shaderID);
+
+			// Draw all meteors
+			for (size_t i = 0; i < meteors.size(); i++)
+			{
+				animateSprite(meteors[i], shaderID, offsetTex, 3.0);
+				drawSprite(meteors[i], shaderID);
+			}
 		}
 		else if (gameState == GAME_OVER)
 		{
