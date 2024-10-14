@@ -68,7 +68,8 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 int setupShader();
 int loadTexture(string filePath, int &imgWidth, int &imgHeight);
 void drawSprite(Sprite spr, GLuint shaderID);
-void animateSprite(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, float secondsToChangePicture);
+void animateSpriteByTime(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, float secondsToChangePicture);
+void animateSpriteByFrame(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, int frameIndex);
 
 // Colisão
 bool checkCollision(Sprite &one, Sprite &two);
@@ -165,8 +166,8 @@ int main(){
     background.setupSprite(texID, vec3(400.0, 300.0, 0.0), vec3(imgWidth * 0.2, imgHeight * 0.2, 1.0), 1, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
 
     // Inicializando a sprite da nave
-    texID = loadTexture("./textures/spaceship.png", imgWidth, imgHeight);
-    spaceship.setupSprite(texID, vec3(100.0, 300.0, 0.0), vec3(imgWidth * 0.1, imgHeight * 0.1, 1.0), 1, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
+		texID = loadTexture("./textures/animated-spaceship.png", imgWidth, imgHeight);
+		spaceship.setupSprite(texID, vec3(100.0, 300.0, 0.0), vec3((imgWidth / 2) * 0.1, imgHeight * 0.1, 1.0), 2, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
 
     // Inicializando a sprite do meteoro
 	int numMeteors = 5; // Number of meteors
@@ -229,7 +230,7 @@ int main(){
 
 		if (gameState == BEFORE_START)
 		{
-			animateSprite(startGame, shaderID, offsetTex, 2.0);
+			animateSpriteByTime(startGame, shaderID, offsetTex, 2.0);
 			drawSprite(startGame, shaderID);
 
 			// Tecla Espaço
@@ -242,15 +243,32 @@ int main(){
 		{
 			float gravity = 0.3;
 
+			// Mantém a animação para foguete desligado por default.
+			animateSpriteByFrame(spaceship, shaderID, offsetTex, 1);
+
 			// Movement controls
-			if ((keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A]) && (spaceship.position.x - vel) > 30) // movimenta X -> esquerda
+			if ((keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A]) && (spaceship.position.x - vel) > 30)
+			{ // movimenta X -> esquerda
 				spaceship.position.x -= vel;
-			if ((keys[GLFW_KEY_RIGHT] || keys[GLFW_KEY_D]) && (spaceship.position.x + vel) < (WIDTH - 30)) // movimenta X -> direita
+			} 
+			if ((keys[GLFW_KEY_RIGHT] || keys[GLFW_KEY_D]) && (spaceship.position.x + vel) < (WIDTH - 30))
+			{ // movimenta X -> direita
 				spaceship.position.x += vel;
-			if ((keys[GLFW_KEY_UP] || keys[GLFW_KEY_W]) && (spaceship.position.y + vel) < (HEIGHT - 30)) // movimenta Y -> cima
+			}
+			if ((keys[GLFW_KEY_UP] || keys[GLFW_KEY_W]) && (spaceship.position.y + vel) < (HEIGHT - 30))
+			{ // movimenta Y -> cima
+				// Muda animação para foguete ligado.
+				animateSpriteByFrame(spaceship, shaderID, offsetTex, 0);
 				spaceship.position.y += vel;
-			if ((keys[GLFW_KEY_DOWN] || keys[GLFW_KEY_S]) && (spaceship.position.y - vel) > 30) // movimenta Y -> baixo.
+			} 
+			if ((keys[GLFW_KEY_DOWN] || keys[GLFW_KEY_S]) && (spaceship.position.y - vel) > 30)
+			{ // movimenta Y -> baixo.
+				// Muda animação para foguete desligado.
+				animateSpriteByFrame(spaceship, shaderID, offsetTex, 1);
 				spaceship.position.y -= vel;
+			}
+
+			// Adiciono o peso da gravidade.
 			if ((spaceship.position.y - gravity) > 30)
 				spaceship.position.y -= gravity; // adiciona peso da gravidade.
 
@@ -292,7 +310,7 @@ int main(){
 			// Draw all meteors
 			for (size_t i = 0; i < meteors.size(); i++)
 			{
-				animateSprite(meteors[i], shaderID, offsetTex, 3.0);
+				animateSpriteByTime(meteors[i], shaderID, offsetTex, 3.0);
 				drawSprite(meteors[i], shaderID);
 			}
 		}
@@ -455,7 +473,7 @@ void Sprite::setupSprite(int texID, vec3 position, vec3 dimensions, int nFrames,
 }
 
 // Função para animar a sprite, passando os diferentes frames;
-void animateSprite(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, float secondsToChangePicture)
+void animateSpriteByTime(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, float secondsToChangePicture)
 {
 	float now = glfwGetTime();
 	float dt = now - spr.lastTime;
@@ -465,6 +483,14 @@ void animateSprite(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, float seconds
 		spr.iFrame = (spr.iFrame + 1) % spr.nFrames; // incrementando ciclicamente o indice do Frame
 		spr.lastTime = now;
 	}
+	offsetTex.s = spr.iFrame * spr.d.s;
+	offsetTex.t = 0.0;
+
+	glUniform2f(glGetUniformLocation(shaderId, "offsetTex"), offsetTex.s, offsetTex.t);
+}
+
+void animateSpriteByFrame(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, int frameIndex) {
+	spr.iFrame = frameIndex;
 	offsetTex.s = spr.iFrame * spr.d.s;
 	offsetTex.t = 0.0;
 
