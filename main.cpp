@@ -54,11 +54,12 @@ std::vector<Sprite> meteors;
 
 // Estados do Jogo
 enum GameState {
+		BEFORE_START,
     RUNNING,
     GAME_OVER
 };
 
-GameState gameState = RUNNING; // Initialize the game state
+GameState gameState = BEFORE_START; // Initialize the game state
 
 // Protótipo da função de callback de teclado
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -154,7 +155,7 @@ int main(){
 
     // Gerando um buffer simples, com a geometria de um triângulo
     // Sprite do fundo da cena
-    Sprite background, spaceship, meteor, gameOver;
+    Sprite background, spaceship, meteor, gameOver, startGame;
     // Carregando uma textura (recebendo seu ID)
 
     // Inicializando a sprite do background
@@ -182,9 +183,12 @@ int main(){
     texID = loadTexture("textures/game-over.png", imgWidth, imgHeight);
     gameOver.setupSprite(texID, vec3(400.0, 300.0, 0.0), vec3(imgWidth * 0.5, imgHeight * 0.5, 1.0), 1, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
 
-    glUseProgram(shaderID);
+		texID = loadTexture("textures/start-game.png", imgWidth, imgHeight);
+		startGame.setupSprite(texID, vec3(400.0, 300.0, 0.0), vec3(imgWidth, imgHeight, 1.0), 1, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
 
-    // Enviando a cor desejada (vec4) para o fragment shader
+		glUseProgram(shaderID);
+
+		// Enviando a cor desejada (vec4) para o fragment shader
     // Utilizamos a variáveis do tipo uniform em GLSL para armazenar esse tipo de info
     // que não está nos buffers
     glUniform1i(glGetUniformLocation(shaderID, "texBuffer"), 0);
@@ -221,7 +225,18 @@ int main(){
 		// Draw the background
 		drawSprite(background, shaderID);
 
-		if (gameState == RUNNING) {
+		if (gameState == BEFORE_START)
+		{
+			drawSprite(startGame, shaderID);
+
+			// Tecla Espaço
+			if (keys[GLFW_KEY_ENTER])
+			{
+				gameState = RUNNING;
+			}
+		}
+		else if (gameState == RUNNING)
+		{
 			// Movement controls
 			if (keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A])
 				spaceship.position.x -= vel;
@@ -272,15 +287,15 @@ int main(){
 
 			drawSprite(spaceship, shaderID);
 			drawSprite(meteor, shaderID);
-
-		} else if (gameState == GAME_OVER) {
-
+		}
+		else if (gameState == GAME_OVER)
+		{
 			drawSprite(gameOver, shaderID);
 
 			// Tecla Espaço
 			if (keys[GLFW_KEY_SPACE]) {
+				gameState = BEFORE_START;
 				resetGame(spaceship, meteors);
-				gameState = RUNNING; 
 			}
 		}
 
