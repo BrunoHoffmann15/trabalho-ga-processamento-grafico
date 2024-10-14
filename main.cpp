@@ -184,7 +184,7 @@ int main(){
     gameOver.setupSprite(texID, vec3(400.0, 300.0, 0.0), vec3(imgWidth * 0.5, imgHeight * 0.5, 1.0), 1, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
 
 		texID = loadTexture("textures/start-game.png", imgWidth, imgHeight);
-		startGame.setupSprite(texID, vec3(400.0, 300.0, 0.0), vec3(imgWidth, imgHeight, 1.0), 1, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
+		startGame.setupSprite(texID, vec3(400.0, 300.0, 0.0), vec3(imgWidth * 0.35, imgHeight * 1.06, 1.0), 3, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
 
 		glUseProgram(shaderID);
 
@@ -227,6 +227,17 @@ int main(){
 
 		if (gameState == BEFORE_START)
 		{
+			float now = glfwGetTime();
+			float dt = now - startGame.lastTime;
+			if (dt >= 2.0 / startGame.FPS)
+			{
+				startGame.iFrame = (startGame.iFrame + 1) % startGame.nFrames; // incrementando ciclicamente o indice do Frame
+				startGame.lastTime = now;
+			}
+			offsetTex.s = startGame.iFrame * startGame.d.s;
+			offsetTex.t = 0.0;
+			glUniform2f(glGetUniformLocation(shaderID, "offsetTex"), offsetTex.s, offsetTex.t);
+
 			drawSprite(startGame, shaderID);
 
 			// Tecla Espaço
