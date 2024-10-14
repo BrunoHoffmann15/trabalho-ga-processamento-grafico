@@ -240,6 +240,8 @@ int main(){
 		}
 		else if (gameState == RUNNING)
 		{
+			float gravity = 0.3;
+
 			// Movement controls
 			if ((keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A]) && (spaceship.position.x - vel) > 30) // movimenta X -> esquerda
 				spaceship.position.x -= vel;
@@ -249,8 +251,8 @@ int main(){
 				spaceship.position.y += vel;
 			if ((keys[GLFW_KEY_DOWN] || keys[GLFW_KEY_S]) && (spaceship.position.y - vel) > 30) // movimenta Y -> baixo.
 				spaceship.position.y -= vel;
-
-			spaceship.position.y -= 0.3; // adiciona peso da gravidade.
+			if ((spaceship.position.y - gravity) > 30)
+				spaceship.position.y -= gravity; // adiciona peso da gravidade.
 
 			// Atualização meteoros na tela
 			for (size_t i = 0; i < meteors.size(); i++) {
