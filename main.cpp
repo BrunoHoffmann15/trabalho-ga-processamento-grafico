@@ -228,7 +228,7 @@ int main(){
 		// Draw the background
 		drawSprite(background, shaderID);
 
-		if (gameState == BEFORE_START)
+		if (gameState == BEFORE_START) // Processo antes do jogo começar
 		{
 			animateSpriteByTime(startGame, shaderID, offsetTex, 2.0);
 			drawSprite(startGame, shaderID);
@@ -239,7 +239,7 @@ int main(){
 				gameState = RUNNING;
 			}
 		}
-		else if (gameState == RUNNING)
+		else if (gameState == RUNNING) // Processo durante o jogo 
 		{
 			float gravity = 0.3;
 
@@ -293,6 +293,7 @@ int main(){
 					break; // Exit the loop if collision occurs
 				}
 			}
+			
 			// Atualiza as distâncias para o check decolisão
 			updateSpriteBounds(spaceship);
 			updateSpriteBounds(meteor);
@@ -307,14 +308,14 @@ int main(){
 			drawSprite(spaceship, shaderID);
 			drawSprite(meteor, shaderID);
 
-			// Draw all meteors
+			// Desenha todos os meteóros;
 			for (size_t i = 0; i < meteors.size(); i++)
 			{
 				animateSpriteByTime(meteors[i], shaderID, offsetTex, 3.0);
 				drawSprite(meteors[i], shaderID);
 			}
 		}
-		else if (gameState == GAME_OVER)
+		else if (gameState == GAME_OVER) // Processo fim de jogo.
 		{
 			drawSprite(gameOver, shaderID);
 
@@ -339,18 +340,19 @@ int main(){
 		return 0;
 	}
 
-	void resetGame(Sprite &spaceship, std::vector<Sprite> &meteors) {
-		spaceship.position = vec3(100.0f, 300.0f, 0.0f);
+// Função para resetar o jogo.
+void resetGame(Sprite &spaceship, std::vector<Sprite> &meteors) {
+		spaceship.position = vec3(100.0f, 300.0f, 0.0f); // Coloca nave na posição inicial
 
-		for (size_t i = 0; i < meteors.size(); i++) {
-			meteors[i].position.x = WIDTH - (rand() % (int)(WIDTH * 0.30));																									 // Start off-screen to the right
-			meteors[i].position.y = rand() % (HEIGHT - (int)(meteors[i].dimensions.y * 2)) + (int)(meteors[i].dimensions.y); // New random Y position
-			updateSpriteBounds(meteors[i]); // Update bounds after resetting position
+		for (size_t i = 0; i < meteors.size(); i++) { // Atualiza as posições dos meteoros.
+			meteors[i].position.x = WIDTH - (rand() % (int)(WIDTH * 0.30));																									 // Nova posição de X, gerada de modo aleatório.
+			meteors[i].position.y = rand() % (HEIGHT - (int)(meteors[i].dimensions.y * 2)) + (int)(meteors[i].dimensions.y); // Nova posição de Y, gerada de modo aleatório.
+			updateSpriteBounds(meteors[i]); // Atualiza limites depois dos meteoros.
 		}
 	}
 
-	// Função de configuração do shader
-	int setupShader(){
+// Função de configuração do shader
+int setupShader(){
 
 		// Compilando Vertex Shader
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -489,7 +491,9 @@ void animateSpriteByTime(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, float s
 	glUniform2f(glGetUniformLocation(shaderId, "offsetTex"), offsetTex.s, offsetTex.t);
 }
 
-void animateSpriteByFrame(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, int frameIndex) {
+// Função para animar a sprinte, passando o índice do frame;
+void animateSpriteByFrame(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, int frameIndex)
+{
 	spr.iFrame = frameIndex;
 	offsetTex.s = spr.iFrame * spr.d.s;
 	offsetTex.t = 0.0;
