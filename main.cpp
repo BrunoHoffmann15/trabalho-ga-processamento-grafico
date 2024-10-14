@@ -241,13 +241,13 @@ int main(){
 		else if (gameState == RUNNING)
 		{
 			// Movement controls
-			if (keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A])
+			if ((keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A]) && (spaceship.position.x - vel) > 30) // movimenta X -> esquerda
 				spaceship.position.x -= vel;
-			if (keys[GLFW_KEY_RIGHT] || keys[GLFW_KEY_D])
+			if ((keys[GLFW_KEY_RIGHT] || keys[GLFW_KEY_D]) && (spaceship.position.x + vel) < (WIDTH - 30)) // movimenta X -> direita
 				spaceship.position.x += vel;
-			if (keys[GLFW_KEY_UP] || keys[GLFW_KEY_W])
+			if ((keys[GLFW_KEY_UP] || keys[GLFW_KEY_W]) && (spaceship.position.y + vel) < (HEIGHT - 30)) // movimenta Y -> cima
 				spaceship.position.y += vel;
-			if (keys[GLFW_KEY_DOWN] || keys[GLFW_KEY_S])
+			if ((keys[GLFW_KEY_DOWN] || keys[GLFW_KEY_S]) && (spaceship.position.y - vel) > 30) // movimenta Y -> baixo.
 				spaceship.position.y -= vel;
 
 			// Atualização meteoros na tela
