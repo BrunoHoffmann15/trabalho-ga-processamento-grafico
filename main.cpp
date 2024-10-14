@@ -182,7 +182,7 @@ int main(){
 		meteors.push_back(meteor); // Add meteor to the vector
 	}
 
-    texID = loadTexture("textures/game-over.png", imgWidth, imgHeight);
+    texID = loadTexture("textures/new-game-over.png", imgWidth, imgHeight);
     gameOver.setupSprite(texID, vec3(400.0, 300.0, 0.0), vec3(imgWidth * 0.5, imgHeight * 0.5, 1.0), 1, 1, vec2(0.0, 0.0), vec2(0.0, 0.0));
 
 		texID = loadTexture("textures/start-game.png", imgWidth, imgHeight);
