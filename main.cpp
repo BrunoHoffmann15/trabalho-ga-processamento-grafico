@@ -321,7 +321,7 @@ int main(){
 		spaceship.position = vec3(100.0f, 300.0f, 0.0f);
 
 		for (size_t i = 0; i < meteors.size(); i++) {
-			meteors[i].position.x = WIDTH; // Start off-screen to the right
+			meteors[i].position.x = WIDTH - (rand() % (int)(WIDTH * 0.30));																									 // Start off-screen to the right
 			meteors[i].position.y = rand() % (HEIGHT - (int)(meteors[i].dimensions.y * 2)) + (int)(meteors[i].dimensions.y); // New random Y position
 			updateSpriteBounds(meteors[i]); // Update bounds after resetting position
 		}
