@@ -68,6 +68,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 int setupShader();
 int loadTexture(string filePath, int &imgWidth, int &imgHeight);
 void drawSprite(Sprite spr, GLuint shaderID);
+void animateSprite(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, float secondsToChangePicture);
 
 // Colisão
 bool checkCollision(Sprite &one, Sprite &two);
@@ -227,17 +228,7 @@ int main(){
 
 		if (gameState == BEFORE_START)
 		{
-			float now = glfwGetTime();
-			float dt = now - startGame.lastTime;
-			if (dt >= 2.0 / startGame.FPS)
-			{
-				startGame.iFrame = (startGame.iFrame + 1) % startGame.nFrames; // incrementando ciclicamente o indice do Frame
-				startGame.lastTime = now;
-			}
-			offsetTex.s = startGame.iFrame * startGame.d.s;
-			offsetTex.t = 0.0;
-			glUniform2f(glGetUniformLocation(shaderID, "offsetTex"), offsetTex.s, offsetTex.t);
-
+			animateSprite(startGame, shaderID, offsetTex, 2.0);
 			drawSprite(startGame, shaderID);
 
 			// Tecla Espaço
@@ -457,11 +448,28 @@ void Sprite::setupSprite(int texID, vec3 position, vec3 dimensions, int nFrames,
     updateSpriteBounds(*this);
 }
 
+// Função para animar a sprite, passando os diferentes frames;
+void animateSprite(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, float secondsToChangePicture)
+{
+	float now = glfwGetTime();
+	float dt = now - spr.lastTime;
+
+	if (dt >= secondsToChangePicture / spr.FPS)
+	{
+		spr.iFrame = (spr.iFrame + 1) % spr.nFrames; // incrementando ciclicamente o indice do Frame
+		spr.lastTime = now;
+	}
+	offsetTex.s = spr.iFrame * spr.d.s;
+	offsetTex.t = 0.0;
+
+	glUniform2f(glGetUniformLocation(shaderId, "offsetTex"), offsetTex.s, offsetTex.t);
+}
 
 // Função para verificar colisão entre dois sprites
-bool checkCollision(Sprite &one, Sprite &two){
-    return (one.getPMax().x >= two.getPMin().x && one.getPMin().x <= two.getPMax().x &&
-            one.getPMax().y >= two.getPMin().y && one.getPMin().y <= two.getPMax().y);
+bool checkCollision(Sprite &one, Sprite &two)
+{
+	return (one.getPMax().x >= two.getPMin().x && one.getPMin().x <= two.getPMax().x &&
+					one.getPMax().y >= two.getPMin().y && one.getPMin().y <= two.getPMax().y);
 }
 
 // Atualiza os limites da sprite
