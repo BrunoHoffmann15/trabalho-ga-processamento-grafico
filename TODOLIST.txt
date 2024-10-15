@@ -1,8 +1,0 @@
-[ ] Adicionar estrutura SpaceShip
-  [ ] Sprite contendo infos da SpaceShip;
-  [ ] Função de desenho;
-
-[ ] Adicionar estrutura Rocks
-  [ ] 
-
-[ ] Adicionar estrutura Background
