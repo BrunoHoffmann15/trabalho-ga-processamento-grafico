@@ -5,7 +5,7 @@ Professora: Rossana Queiroz.
 
 ## Spaceship Meteor
 
-O jogo consiste em uma nave espacial que precisa desviar os meteóros. Esses meteóros aparecem de maneira aleatória, e ao chocar a nave com o meteóro você perde.
+O jogo consiste em uma nave espacial que precisa desviar os meteoros. Esses meteoros aparecem de maneira aleatória, e ao chocar a nave com o meteoro você perde.
 
 ## Apresentação do Jogo
 
