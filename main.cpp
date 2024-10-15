@@ -294,19 +294,8 @@ int main(){
 				}
 			}
 			
-			// Atualiza as distâncias para o check decolisão
 			updateSpriteBounds(spaceship);
-			updateSpriteBounds(meteor);
-
-			// Check for collision
-			collision = checkCollision(spaceship, meteor);
-
-			if (collision) {
-				gameState = GAME_OVER; 
-			}
-
 			drawSprite(spaceship, shaderID);
-			drawSprite(meteor, shaderID);
 
 			// Desenha todos os meteóros;
 			for (size_t i = 0; i < meteors.size(); i++)
