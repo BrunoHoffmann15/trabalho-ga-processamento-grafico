@@ -272,7 +272,10 @@ int main(){
 			if ((spaceship.position.y - gravity) > 30)
 				spaceship.position.y -= gravity; // adiciona peso da gravidade.
 
-			// Atualização meteoros na tela
+            updateSpriteBounds(spaceship); // atualiza limites da espaço nave.
+            drawSprite(spaceship, shaderID); // desenha sprite da nave.
+
+            // Atualização meteoros na tela
 			for (size_t i = 0; i < meteors.size(); i++) {
 				meteors[i].position.x -= vel; // Move each meteor left
 
@@ -292,17 +295,10 @@ int main(){
 					gameState = GAME_OVER;
 					break; // Exit the loop if collision occurs
 				}
-			}
-			
-			updateSpriteBounds(spaceship);
-			drawSprite(spaceship, shaderID);
 
-			// Desenha todos os meteóros;
-			for (size_t i = 0; i < meteors.size(); i++)
-			{
-				animateSpriteByTime(meteors[i], shaderID, offsetTex, 3.0);
-				drawSprite(meteors[i], shaderID);
-			}
+                animateSpriteByTime(meteors[i], shaderID, offsetTex, 3.0);
+                drawSprite(meteors[i], shaderID); // desenha sprite dos meteóros.
+            }
 		}
 		else if (gameState == GAME_OVER) // Processo fim de jogo.
 		{
