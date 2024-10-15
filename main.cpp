@@ -479,7 +479,6 @@ void Sprite::setupSprite(int texID, vec3 position, vec3 dimensions, int nFrames,
 // Função para animar a sprite, passando os diferentes frames;
 void animateSpriteByTime(Sprite &spr, GLuint &shaderId, vec2 &offsetTex, float reduceIntensityFPS)
 {
-    spr.FPS = 12.0f;
     float now = glfwGetTime();
     float dt = now - spr.lastTime;
 
